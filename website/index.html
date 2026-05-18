@@ -32,7 +32,7 @@
             >
             <a
               class="btn-ghost-nav"
-              href="https://github.com/gssisaac/puremac"
+              href="https://github.com/gssisaac/pure-mac"
               rel="noopener noreferrer"
               target="_blank"
               >GitHub</a
@@ -63,7 +63,7 @@
                   <a
                     id="download-hero"
                     class="btn-download"
-                    href="https://github.com/gssisaac/puremac/releases"
+                    href="https://github.com/gssisaac/pure-mac/releases"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
@@ -87,21 +87,22 @@
                   </a>
                   <a
                     class="btn-ghost-nav"
-                    href="https://github.com/gssisaac/puremac"
+                    href="https://github.com/gssisaac/pure-mac"
                     rel="noopener noreferrer"
                     target="_blank"
                   >
                     Source &amp; issues on GitHub
                   </a>
                 </div>
-                <p class="hero-download-note" id="download-filename-note">
-                  After you run <code class="mono">pnpm tauri:build</code> on
-                  your machine, this page links to your packaged
-                  <code class="mono" id="download-filename-display"
-                    >PureMac.&lt;version&gt;.dmg</code
-                  >
-                  in <code class="mono">website/releases</code> — or open
-                  GitHub Releases if the file is not hosted here yet.
+                <p class="hero-download-note">
+                  Grab the latest signed DMG from
+                  <a
+                    href="https://github.com/gssisaac/pure-mac/releases"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    >GitHub Releases</a
+                  >. Prefer to build yourself? Run
+                  <code class="mono">pnpm tauri:build</code>.
                 </p>
               </div>
               <figure class="hero-visual">
@@ -245,10 +246,10 @@
                   The project is <strong>free forever</strong> and developed in
                   public on
                   <a
-                    href="https://github.com/gssisaac/puremac"
+                    href="https://github.com/gssisaac/pure-mac"
                     rel="noopener noreferrer"
                     target="_blank"
-                    >github.com/gssisaac/puremac</a
+                    >github.com/gssisaac/pure-mac</a
                   >. Download the signed disk image for the current version, or
                   build from source if you prefer.
                 </p>
@@ -256,7 +257,7 @@
               <a
                 id="download-cta"
                 class="btn-download"
-                href="https://github.com/gssisaac/puremac/releases"
+                href="https://github.com/gssisaac/pure-mac/releases"
                 rel="noopener noreferrer"
                 target="_blank"
               >
@@ -285,84 +286,13 @@
         <div class="site-footer-inner">
           <span>© PureMac contributors — open source on GitHub.</span>
           <a
-            href="https://github.com/gssisaac/puremac"
+            href="https://github.com/gssisaac/pure-mac"
             rel="noopener noreferrer"
             target="_blank"
-            >github.com/gssisaac/puremac</a
+            >github.com/gssisaac/pure-mac</a
           >
         </div>
       </footer>
     </div>
-
-    <script>
-      (function () {
-        var GH_RELEASES = "https://github.com/gssisaac/puremac/releases";
-        var hero = document.getElementById("download-hero");
-        var cta = document.getElementById("download-cta");
-        var note = document.getElementById("download-filename-note");
-        var nameEl = document.getElementById("download-filename-display");
-        var heroLabel = hero.querySelector(".dl-label");
-        var ctaLabel = cta.querySelector(".dl-label");
-
-        function localUrl(file) {
-          return "releases/" + encodeURIComponent(file);
-        }
-
-        function setGithubFallback() {
-          hero.href = GH_RELEASES;
-          cta.href = GH_RELEASES;
-          hero.target = "_blank";
-          cta.target = "_blank";
-          hero.rel = "noopener noreferrer";
-          cta.rel = "noopener noreferrer";
-        }
-
-        function applyLocal(meta) {
-          var url = localUrl(meta.file);
-          hero.href = url;
-          cta.href = url;
-          hero.removeAttribute("target");
-          cta.removeAttribute("target");
-          hero.removeAttribute("rel");
-          cta.removeAttribute("rel");
-          nameEl.textContent = meta.file;
-          var ver = meta.version ? " " + meta.version : "";
-          heroLabel.textContent = "Download PureMac" + ver + " for macOS";
-          ctaLabel.textContent = "Download PureMac" + ver + " for macOS";
-          note.innerHTML =
-            'Installer: <code class="mono">' +
-            meta.file +
-            '</code> in <code class="mono">website/releases</code> (copied when you run <code class="mono">pnpm tauri:build</code>).';
-        }
-
-        fetch("download.json", { cache: "no-store" })
-          .then(function (r) {
-            return r.ok ? r.json() : null;
-          })
-          .then(function (meta) {
-            if (!meta || !meta.file) {
-              setGithubFallback();
-              return;
-            }
-            return fetch(localUrl(meta.file), { method: "HEAD" })
-              .then(function (headRes) {
-                var allow =
-                  headRes &&
-                  (headRes.ok || headRes.status === 405);
-                if (allow) {
-                  applyLocal(meta);
-                } else {
-                  setGithubFallback();
-                }
-              })
-              .catch(function () {
-                setGithubFallback();
-              });
-          })
-          .catch(function () {
-            setGithubFallback();
-          });
-      })();
-    </script>
   </body>
 </html>
