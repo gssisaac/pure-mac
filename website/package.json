@@ -2,6 +2,18 @@
   "name": "puremac-website",
   "private": true,
   "version": "0.1.0",
+  "description": "Marketing and documentation website for PureMac (Next.js)",
+  "license": "MIT",
+  "author": "Isaac Lee <gssisaac@gmail.com> (https://x.com/ycisaac)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gssisaac/pure-mac.git",
+    "directory": "website"
+  },
+  "bugs": {
+    "url": "https://github.com/gssisaac/pure-mac/issues"
+  },
+  "homepage": "https://github.com/gssisaac/pure-mac#readme",
   "scripts": {
     "prebuild": "bash ./build.sh",
     "dev": "next dev",

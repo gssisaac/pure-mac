@@ -11,6 +11,7 @@ pub mod util;
 
 pub use app_support::collect_installed_bundle_ids;
 
+use std::collections::HashSet;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use tauri::{AppHandle, Emitter};
@@ -39,15 +40,23 @@ fn category_slug(c: &Category) -> &'static str {
 fn all_categories() -> Vec<Category> {
     vec![
         Category::Dotfiles,
-        Category::NodeModules,
         Category::DormantApps,
         Category::AppSupport,
         Category::DeveloperTools,
         Category::SystemCache,
+        Category::NodeModules,
         Category::Browser,
         Category::Backups,
         Category::LargeFiles,
     ]
+}
+
+fn order_enabled_categories(enabled: &[Category]) -> Vec<Category> {
+    let selected: HashSet<Category> = enabled.iter().cloned().collect();
+    all_categories()
+        .into_iter()
+        .filter(|c| selected.contains(c))
+        .collect()
 }
 
 pub fn run_scan(
@@ -61,6 +70,8 @@ pub fn run_scan(
 
     if config.enabled_categories.is_empty() {
         config.enabled_categories = all_categories();
+    } else {
+        config.enabled_categories = order_enabled_categories(&config.enabled_categories);
     }
 
     let mut items: Vec<ScanItem> = Vec::new();

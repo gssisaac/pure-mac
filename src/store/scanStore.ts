@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import type { Category, ScanItem, ScanStatus, ScanSummary } from "../lib/types";
+import { CANONICAL_CATEGORIES } from "../lib/categoryOrder";
 
 export type ActiveCategory = Category | "all";
 
@@ -31,17 +32,7 @@ type ScanState = {
   detailSubfolderListNonce: number;
 };
 
-const ALL_CATEGORIES: Category[] = [
-  "Dotfiles",
-  "NodeModules",
-  "DormantApps",
-  "AppSupport",
-  "DeveloperTools",
-  "SystemCache",
-  "Browser",
-  "Backups",
-  "LargeFiles",
-];
+const ALL_CATEGORIES: Category[] = [...CANONICAL_CATEGORIES];
 
 const initial: ScanState = {
   status: "idle",

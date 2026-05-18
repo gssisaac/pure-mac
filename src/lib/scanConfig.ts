@@ -1,21 +1,16 @@
-import type { ScanConfig, Category } from "./types";
+import type { ScanConfig } from "./types";
 import type { SettingsState } from "../store/settingsStore";
-
-const ALL: Category[] = [
-  "Dotfiles",
-  "NodeModules",
-  "DormantApps",
-  "AppSupport",
-  "DeveloperTools",
-  "SystemCache",
-  "Browser",
-  "Backups",
-  "LargeFiles",
-];
+import {
+  CANONICAL_CATEGORIES,
+  normalizeEnabledCategories,
+} from "./categoryOrder";
 
 export function buildScanConfig(s: SettingsState): ScanConfig {
+  const enabled = s.enabledCategories.length
+    ? normalizeEnabledCategories(s.enabledCategories)
+    : CANONICAL_CATEGORIES;
   return {
-    enabledCategories: s.enabledCategories.length ? s.enabledCategories : ALL,
+    enabledCategories: enabled,
     searchPaths: s.searchPaths,
     nodeModulesThresholdDays: s.nodeModulesThresholdDays,
     appUnusedThresholdDays: s.appUnusedThresholdDays,

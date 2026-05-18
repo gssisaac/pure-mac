@@ -1,21 +1,15 @@
 import { useSyncExternalStore } from "react";
 import type { Category } from "../lib/types";
+import {
+  CANONICAL_CATEGORIES,
+  normalizeEnabledCategories,
+} from "../lib/categoryOrder";
 
 const STORAGE_KEY = "puremac-settings-v1";
 
 export type DeleteMode = "trash" | "permanent";
 
-const defaultCategories: Category[] = [
-  "Dotfiles",
-  "NodeModules",
-  "DormantApps",
-  "AppSupport",
-  "DeveloperTools",
-  "SystemCache",
-  "Browser",
-  "Backups",
-  "LargeFiles",
-];
+const defaultCategories: Category[] = [...CANONICAL_CATEGORIES];
 
 export type SettingsState = {
   nodeModulesThresholdDays: number;
@@ -48,7 +42,9 @@ function load(): SettingsState {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { ...defaults };
     const parsed = JSON.parse(raw) as Partial<SettingsState>;
-    return { ...defaults, ...parsed };
+    const merged = { ...defaults, ...parsed };
+    merged.enabledCategories = normalizeEnabledCategories(merged.enabledCategories);
+    return merged;
   } catch {
     return { ...defaults };
   }
@@ -93,7 +89,9 @@ export const settingsActions = {
     const set = new Set(state.enabledCategories);
     if (on) set.add(cat);
     else set.delete(cat);
-    settingsActions.patch({ enabledCategories: Array.from(set) });
+    settingsActions.patch({
+      enabledCategories: normalizeEnabledCategories(Array.from(set)),
+    });
   },
   setDryRun(v: boolean) {
     settingsActions.patch({ dryRun: v });

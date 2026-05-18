@@ -4,6 +4,7 @@ import {
   useSettingsStore,
 } from "../store/settingsStore";
 import type { Category } from "../lib/types";
+import { CANONICAL_CATEGORIES } from "../lib/categoryOrder";
 import * as api from "../lib/tauri";
 import { useEffect, useState } from "react";
 import { Card } from "../components/ui/card";
@@ -13,17 +14,7 @@ import { Select } from "../components/ui/select";
 import { Button } from "../components/ui/button";
 import { Switch } from "../components/ui/switch";
 
-const ALL_CATS: Category[] = [
-  "Dotfiles",
-  "NodeModules",
-  "DormantApps",
-  "AppSupport",
-  "DeveloperTools",
-  "SystemCache",
-  "Browser",
-  "Backups",
-  "LargeFiles",
-];
+const ALL_CATS: Category[] = [...CANONICAL_CATEGORIES];
 
 export function SettingsPage() {
   const s = useSettingsStore((x) => x);

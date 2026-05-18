@@ -26,12 +26,6 @@ const META: Record<
     icon: FolderOpen,
     accent: "cyan",
   },
-  NodeModules: {
-    label: "node_modules",
-    hint: "Old JS ecosystem dependencies",
-    icon: Package,
-    accent: "emerald",
-  },
   DormantApps: {
     label: "Dormant Apps",
     hint: "Unused binary files & binaries",
@@ -55,6 +49,12 @@ const META: Record<
     hint: "Safe-to-flush OS cache bundles",
     icon: Database,
     accent: "rose",
+  },
+  NodeModules: {
+    label: "node_modules",
+    hint: "Old JS ecosystem dependencies",
+    icon: Package,
+    accent: "emerald",
   },
   Browser: {
     label: "Browser Caches",
