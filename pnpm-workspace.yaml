@@ -1,2 +1,8 @@
+# Required when this file exists: pnpm treats the repo as a workspace.
+packages:
+  - "."
+  - "website"
+
 allowBuilds:
   esbuild: true
+  sharp: true

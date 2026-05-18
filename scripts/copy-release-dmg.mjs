@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
  * After `tauri build` on macOS, copies the generated DMG to
- * website/releases/PureMac.{version}.dmg and refreshes website/download.json.
- * Also refreshes website/icon.png from bundle artwork for the landing favicon.
+ * website/public/releases/PureMac.{version}.dmg and refreshes website/public/download.json.
+ * Also refreshes website/public/icon.png from bundle artwork for the landing favicon.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -12,9 +12,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const root = path.join(__dirname, "..");
 const tauriConfPath = path.join(root, "src-tauri", "tauri.conf.json");
 const websiteDir = path.join(root, "website");
-const releasesDir = path.join(websiteDir, "releases");
+const releasesDir = path.join(websiteDir, "public", "releases");
 const iconSrc = path.join(root, "src-tauri", "icons", "128x128.png");
-const iconDest = path.join(websiteDir, "icon.png");
+const iconDest = path.join(websiteDir, "public", "icon.png");
 
 function readVersion() {
   const raw = fs.readFileSync(tauriConfPath, "utf8");
@@ -90,11 +90,11 @@ function main() {
     builtFrom: copiedFrom,
   };
   fs.writeFileSync(
-    path.join(websiteDir, "download.json"),
+    path.join(websiteDir, "public", "download.json"),
     JSON.stringify(downloadMeta, null, 2) + "\n",
     "utf8",
   );
-  console.info(`Wrote website/download.json (version ${version})`);
+  console.info(`Wrote website/public/download.json (version ${version})`);
 }
 
 try {

@@ -10,7 +10,8 @@
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build && node scripts/copy-release-dmg.mjs",
-    "website:build": "bash website/build.sh"
+    "website:dev": "pnpm --dir website dev",
+    "website:build": "pnpm --dir website build"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.3",
@@ -30,7 +31,8 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "esbuild"
+      "esbuild",
+      "sharp"
     ]
   }
 }
