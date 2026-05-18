@@ -28,3 +28,7 @@ src-tauri/target
 
 # Marketing site installers (produce with pnpm tauri:build)
 website/releases/*.dmg
+
+# Copied from ../public/ by website/build.sh (keep in sync on deploy)
+website/assets/*.webp
+website/assets/*.mp4

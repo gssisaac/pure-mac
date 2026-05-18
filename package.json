@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build && node scripts/copy-release-dmg.mjs"
+    "tauri:build": "tauri build && node scripts/copy-release-dmg.mjs",
+    "website:build": "bash website/build.sh"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.3",
