@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import type { DeleteMode } from "../../store/settingsStore";
-import type { ScanItem } from "../../lib/types";
+import type { DeleteConfirmRow } from "../../lib/types";
 import { formatBytes } from "../../lib/utils";
 import { RiskBadge } from "./RiskBadge";
 import { Button } from "../ui/button";
@@ -11,7 +11,7 @@ import { Select } from "../ui/select";
 type Props = {
   open: boolean;
   onClose: () => void;
-  items: ScanItem[];
+  rows: DeleteConfirmRow[];
   onConfirm: (mode: DeleteMode) => void;
   defaultMode: DeleteMode;
 };
@@ -19,7 +19,7 @@ type Props = {
 export function ConfirmModal({
   open,
   onClose,
-  items,
+  rows,
   onConfirm,
   defaultMode,
 }: Props) {
@@ -35,9 +35,9 @@ export function ConfirmModal({
 
   if (!open) return null;
 
-  const total = items.reduce((a, x) => a + x.sizeBytes, 0);
-  const preview = items.slice(0, 5);
-  const rest = items.length - preview.length;
+  const total = rows.reduce((a, x) => a + x.sizeBytes, 0);
+  const preview = rows.slice(0, 5);
+  const rest = rows.length - preview.length;
   const permanentOk = typed === "DELETE";
 
   return (
@@ -45,14 +45,18 @@ export function ConfirmModal({
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>Confirm deletion</h2>
         <p className="muted small">
-          {items.length} item{items.length === 1 ? "" : "s"} · {formatBytes(total)}{" "}
-          estimated
+          {rows.length} item{rows.length === 1 ? "" : "s"} ·{" "}
+          {formatBytes(total)} estimated
         </p>
         <ul className="confirm-list">
-          {preview.map((it) => (
-            <li key={it.id}>
-              <span className="mono">{it.name}</span>
-              <RiskBadge level={it.riskLevel} />
+          {preview.map((row) => (
+            <li key={row.key}>
+              <span className="mono">{row.name}</span>
+              {row.riskLevel != null ? (
+                <RiskBadge level={row.riskLevel} />
+              ) : (
+                <span className="badge mono tiny">Folder</span>
+              )}
             </li>
           ))}
         </ul>

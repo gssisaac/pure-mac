@@ -43,7 +43,11 @@ export function ResultsPage() {
         </aside>
         <main className="results-main">
           {shown.length === 0 ? (
-            <Card className="empty">Nothing in this filter yet.</Card>
+            <Card className="category-card dash-cat-card results-empty-card">
+              <p className="muted results-empty-card-text">
+                Nothing in this filter yet.
+              </p>
+            </Card>
           ) : (
             <ResultList items={shown} />
           )}

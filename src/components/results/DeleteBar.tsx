@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { formatBytes } from "../../lib/utils";
 import { scanActions, useScanStore } from "../../store/scanStore";
 import { useSettingsStore } from "../../store/settingsStore";
 import type { DeleteMode } from "../../store/settingsStore";
+import type { DeleteConfirmRow } from "../../lib/types";
 import { useDelete } from "../../hooks/useDelete";
 import { ConfirmModal } from "../shared/ConfirmModal";
 import { Button } from "../ui/button";
@@ -10,26 +11,65 @@ import { Button } from "../ui/button";
 export function DeleteBar() {
   const items = useScanStore((s) => s.items);
   const selectedIds = useScanStore((s) => s.selectedIds);
+  const detailSubfolderSelection = useScanStore((s) => s.detailSubfolderSelection);
   const dryRun = useSettingsStore((s) => s.dryRun);
   const defaultMode = useSettingsStore((s) => s.defaultDeleteMode);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { toTrash, permanent, pending } = useDelete();
 
-  const selected = items.filter((i) => selectedIds.has(i.id));
-  const bytes = selected.reduce((a, i) => a + i.sizeBytes, 0);
-  const paths = selected.map((i) => i.path);
+  const selected = useMemo(
+    () => items.filter((i) => selectedIds.has(i.id)),
+    [items, selectedIds],
+  );
 
-  if (selected.length === 0) return null;
+  const subfolderRows = useMemo(
+    () =>
+      [...detailSubfolderSelection.entries()].map(([path, m]) => ({
+        key: path,
+        name: m.name,
+        sizeBytes: m.sizeBytes,
+      })),
+    [detailSubfolderSelection],
+  );
+
+  const confirmRows: DeleteConfirmRow[] = useMemo(
+    () => [
+      ...selected.map((i) => ({
+        key: i.id,
+        name: i.name,
+        sizeBytes: i.sizeBytes,
+        riskLevel: i.riskLevel,
+      })),
+      ...subfolderRows.map((r) => ({
+        key: r.key,
+        name: r.name,
+        sizeBytes: r.sizeBytes,
+      })),
+    ],
+    [selected, subfolderRows],
+  );
+
+  const bytes = useMemo(
+    () => confirmRows.reduce((a, r) => a + r.sizeBytes, 0),
+    [confirmRows],
+  );
+
+  const count = confirmRows.length;
+
+  if (count === 0) return null;
 
   const run = async (mode: DeleteMode) => {
     setConfirmOpen(false);
+    const pathSet = new Set<string>();
+    for (const it of selected) pathSet.add(it.path);
+    for (const row of subfolderRows) pathSet.add(row.key);
+    const paths = [...pathSet];
     if (mode === "trash") {
       await toTrash(paths, dryRun);
     } else {
       await permanent(paths, dryRun);
     }
-    const idset = new Set(selected.map((s) => s.id));
-    scanActions.removeItems(idset);
+    scanActions.finishDeletingPaths(pathSet, new Set(selected.map((s) => s.id)));
   };
 
   return (
@@ -37,7 +77,7 @@ export function DeleteBar() {
       <div className="delete-bar row spread">
         <div className="row gap tight">
           <span className="mono">
-            {selected.length} selected · {formatBytes(bytes)}
+            {count} selected · {formatBytes(bytes)}
           </span>
           {dryRun && <span className="pill warn">DRY RUN</span>}
         </div>
@@ -53,7 +93,7 @@ export function DeleteBar() {
       <ConfirmModal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        items={selected}
+        rows={confirmRows}
         defaultMode={defaultMode}
         onConfirm={(mode) => void run(mode)}
       />

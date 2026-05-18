@@ -23,6 +23,12 @@ type ScanState = {
     bytesFound: number;
   } | null;
   completedCategories: Set<string>;
+  /**
+   * Subfolders selected for deletion on the result detail page (path → metadata).
+   */
+  detailSubfolderSelection: Map<string, { name: string; sizeBytes: number }>;
+  /** Bumped after filesystem deletes so the subfolder list refetches. */
+  detailSubfolderListNonce: number;
 };
 
 const ALL_CATEGORIES: Category[] = [
@@ -47,6 +53,8 @@ const initial: ScanState = {
   detailFolderStack: [],
   progress: null,
   completedCategories: new Set(),
+  detailSubfolderSelection: new Map(),
+  detailSubfolderListNonce: 0,
 };
 
 let state: ScanState = initial;
@@ -61,6 +69,28 @@ function setState(partial: Partial<ScanState>) {
   emit();
 }
 
+function normPath(p: string): string {
+  return p.replace(/\/+$/, "") || "/";
+}
+
+/** Drop stack entries removed or under deleted paths; preserve root if valid. */
+function stackAfterPathDeletes(stack: string[], deleted: Set<string>): string[] {
+  if (stack.length === 0) return [];
+  const isRemoved = (p: string) => {
+    const pn = normPath(p);
+    for (const d of deleted) {
+      const dn = normPath(d);
+      if (pn === dn || pn.startsWith(`${dn}/`)) return true;
+    }
+    return false;
+  };
+  const root = stack[0]!;
+  if (isRemoved(root)) return [];
+  const filtered = stack.filter((p) => !isRemoved(p));
+  if (filtered.length === 0) return [root];
+  return filtered;
+}
+
 export const scanActions = {
   reset() {
     state = {
@@ -68,6 +98,8 @@ export const scanActions = {
       completedCategories: new Set(),
       detailItemId: null,
       detailFolderStack: [],
+      detailSubfolderSelection: new Map(),
+      detailSubfolderListNonce: 0,
     };
     emit();
   },
@@ -97,14 +129,19 @@ export const scanActions = {
     setState({ selectedIds: next });
   },
   clearSelection() {
-    setState({ selectedIds: new Set() });
+    setState({
+      selectedIds: new Set(),
+      detailSubfolderSelection: new Map(),
+    });
   },
   removeItems(ids: Set<string>) {
     let detailItemId = state.detailItemId;
     let detailFolderStack = state.detailFolderStack;
+    let detailSubfolderSelection = state.detailSubfolderSelection;
     if (detailItemId && ids.has(detailItemId)) {
       detailItemId = null;
       detailFolderStack = [];
+      detailSubfolderSelection = new Map();
     }
     setState({
       items: state.items.filter((i) => !ids.has(i.id)),
@@ -113,6 +150,7 @@ export const scanActions = {
       ),
       detailItemId,
       detailFolderStack,
+      detailSubfolderSelection,
     });
   },
   setActiveCategory(cat: ActiveCategory) {
@@ -120,6 +158,7 @@ export const scanActions = {
       activeCategory: cat,
       detailItemId: null,
       detailFolderStack: [],
+      detailSubfolderSelection: new Map(),
     });
   },
   openResultDetail(id: string) {
@@ -127,20 +166,73 @@ export const scanActions = {
     setState({
       detailItemId: id,
       detailFolderStack: it ? [it.path] : [],
+      detailSubfolderSelection: new Map(),
     });
   },
   closeResultDetail() {
-    setState({ detailItemId: null, detailFolderStack: [] });
+    setState({
+      detailItemId: null,
+      detailFolderStack: [],
+      detailSubfolderSelection: new Map(),
+    });
   },
   navigateDetailSubfolder(path: string) {
     setState({
       detailFolderStack: [...state.detailFolderStack, path],
+      detailSubfolderSelection: new Map(),
     });
   },
   navigateDetailFolderUp() {
     const st = state.detailFolderStack;
     if (st.length <= 1) return;
-    setState({ detailFolderStack: st.slice(0, -1) });
+    setState({
+      detailFolderStack: st.slice(0, -1),
+      detailSubfolderSelection: new Map(),
+    });
+  },
+  toggleDetailSubfolderSelection(entry: {
+    path: string;
+    name: string;
+    sizeBytes: number;
+  }) {
+    const next = new Map(state.detailSubfolderSelection);
+    if (next.has(entry.path)) next.delete(entry.path);
+    else next.set(entry.path, { name: entry.name, sizeBytes: entry.sizeBytes });
+    setState({ detailSubfolderSelection: next });
+  },
+  finishDeletingPaths(deletedPaths: Set<string>, deletedScanIds: Set<string>) {
+    const items = state.items.filter(
+      (i) => !deletedScanIds.has(i.id) && !deletedPaths.has(i.path),
+    );
+    const subSel = new Map(state.detailSubfolderSelection);
+    for (const p of deletedPaths) subSel.delete(p);
+
+    let detailItemId = state.detailItemId;
+    let detailFolderStack = stackAfterPathDeletes(
+      state.detailFolderStack,
+      deletedPaths,
+    );
+
+    if (detailFolderStack.length === 0) {
+      detailItemId = null;
+    }
+    if (detailItemId && !items.some((i) => i.id === detailItemId)) {
+      detailItemId = null;
+      detailFolderStack = [];
+    }
+
+    setState({
+      items,
+      selectedIds: new Set(
+        [...state.selectedIds].filter((id) =>
+          items.some((i) => i.id === id),
+        ),
+      ),
+      detailItemId,
+      detailFolderStack,
+      detailSubfolderSelection: subSel,
+      detailSubfolderListNonce: state.detailSubfolderListNonce + 1,
+    });
   },
   setProgress(p: ScanState["progress"]) {
     setState({ progress: p });

@@ -25,3 +25,6 @@ dist-ssr
 
 # Rust / Tauri
 src-tauri/target
+
+# Marketing site installers (produce with pnpm tauri:build)
+website/releases/*.dmg

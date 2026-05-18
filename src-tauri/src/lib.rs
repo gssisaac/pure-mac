@@ -2,6 +2,9 @@ mod cleaner;
 mod models;
 mod scanner;
 
+#[allow(dead_code)]
+const _TAURI_ICON_STAMP: &str = env!("TAURI_ICON_STAMP");
+
 use std::fs::{create_dir_all, OpenOptions};
 use std::io::Write;
 use std::path::Path;

@@ -12,7 +12,7 @@ import { useSettingsStore, settingsActions } from "../store/settingsStore";
 import { buildScanConfig } from "../lib/scanConfig";
 import { useScanLive } from "../hooks/useScan";
 import { formatRelativeDate } from "../lib/utils";
-import { Play } from "lucide-react";
+import { Info, Play } from "lucide-react";
 import { Button } from "../components/ui/button";
 
 export function Dashboard({
@@ -47,27 +47,37 @@ export function Dashboard({
   const cats = allDashboardCategories();
 
   return (
-    <div className="page">
+    <div className="page dashboard-page">
       <TopBar
+        className="dashboard-topbar"
         title="Dashboard"
         subtitle={
-          last
-            ? `Last scanned: ${formatRelativeDate(last)}`
-            : "No scan yet — start below."
+          last ? (
+            <span className="dashboard-subtitle-row">
+              <Info className="dashboard-subtitle-ico" size={14} strokeWidth={2} />
+              Last scanned {formatRelativeDate(last)}.
+            </span>
+          ) : (
+            <span className="dashboard-subtitle-row">
+              <Info className="dashboard-subtitle-ico" size={14} strokeWidth={2} />
+              No scan executed yet — initiate system diagnosis below.
+            </span>
+          )
         }
       />
-      <div className="stack">
+      <div className="stack dashboard-stack">
         <DiskUsageChart disk={disk} summary={summary} />
-        <div className="row gap wrap">
+        <div className="dashboard-scan-wrap">
           <Button
+            className="dashboard-scan-btn"
             disabled={status === "scanning"}
             onClick={() => void run()}
           >
-            <Play size={16} fill="currentColor" />
-            Start scan
+            <Play size={15} fill="currentColor" className="dashboard-scan-play" />
+            Start System Scan
           </Button>
         </div>
-        <div className="grid cats">
+        <div className="grid cats dashboard-cats">
           {cats.map((c) => (
             <CategoryCard key={c} cat={c} summary={summary} />
           ))}

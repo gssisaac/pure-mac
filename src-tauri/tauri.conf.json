@@ -12,12 +12,19 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "PureMac",
         "width": 1100,
         "height": 720,
         "minWidth": 900,
         "minHeight": 600,
         "decorations": true,
+        "titleBarStyle": "Overlay",
+        "hiddenTitle": true,
+        "trafficLightPosition": {
+          "x": 16,
+          "y": 20
+        },
         "transparent": false
       }
     ],

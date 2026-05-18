@@ -22,6 +22,8 @@ export function ResultDetailPage({ itemId }: { itemId: string }) {
   const items = useScanStore((s) => s.items);
   const selectedIds = useScanStore((s) => s.selectedIds);
   const detailFolderStack = useScanStore((s) => s.detailFolderStack);
+  const detailSubfolderSelection = useScanStore((s) => s.detailSubfolderSelection);
+  const detailListNonce = useScanStore((s) => s.detailSubfolderListNonce);
   const dryRun = useSettingsStore((s) => s.dryRun);
   const item = useMemo(
     () => items.find((i) => i.id === itemId) ?? null,
@@ -66,7 +68,7 @@ export function ResultDetailPage({ itemId }: { itemId: string }) {
     return () => {
       cancelled = true;
     };
-  }, [listRootPath]);
+  }, [listRootPath, detailListNonce]);
 
   if (!item) {
     return (
@@ -133,8 +135,8 @@ export function ResultDetailPage({ itemId }: { itemId: string }) {
             Inside <span className="mono">{listRootPath}</span>
           </p>
           <p className="muted small" style={{ marginTop: 0 }}>
-            Direct child folders only, largest first. Click a row to open it;
-            use the icon to reveal in Finder.
+            Direct child folders only, largest first. Click a row to open it,
+            or use checkboxes with the delete bar. The icon reveals in Finder.
           </p>
           <ul className="detail-size-list app-scroll">
             {loading && (
@@ -154,6 +156,22 @@ export function ResultDetailPage({ itemId }: { itemId: string }) {
               !loadError &&
               subfolders.map((row) => (
                 <li key={row.path} className="detail-size-row-wrap">
+                  <div
+                    className="check detail-row-check"
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  >
+                    <Checkbox
+                      checked={detailSubfolderSelection.has(row.path)}
+                      onCheckedChange={() =>
+                        scanActions.toggleDetailSubfolderSelection({
+                          path: row.path,
+                          name: row.name,
+                          sizeBytes: row.sizeBytes,
+                        })
+                      }
+                    />
+                  </div>
                   <button
                     type="button"
                     className="detail-size-row"

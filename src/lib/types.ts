@@ -2,6 +2,14 @@ export type ScanStatus = "idle" | "scanning" | "complete";
 
 export type RiskLevel = "Safe" | "Caution" | "Recommended";
 
+/** Row shown in the delete confirmation dialog (scan hits or filesystem paths). */
+export type DeleteConfirmRow = {
+  key: string;
+  name: string;
+  sizeBytes: number;
+  riskLevel?: RiskLevel;
+};
+
 export type Category =
   | "Dotfiles"
   | "NodeModules"

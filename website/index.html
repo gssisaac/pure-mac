@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="PureMac is a free, open-source macOS app that scans your disk, summarizes reclaimable space, and helps you clean large files safely."
+    />
+    <title>PureMac — Free disk space insight for macOS</title>
+    <link rel="icon" href="icon.png" type="image/png" />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <div class="site">
+      <div class="site-inner">
+        <header class="site-nav">
+          <div class="brand-lockup">
+            <img
+              class="brand-icon"
+              src="icon.png"
+              alt=""
+              width="36"
+              height="36"
+            />
+            <span class="brand-wordmark">PureMac</span>
+          </div>
+          <nav class="nav-actions" aria-label="Site">
+            <span class="pill-free"
+              ><span class="pill-free-dot" aria-hidden="true"></span>Free &
+              open source</span
+            >
+            <a
+              class="btn-ghost-nav"
+              href="https://github.com/gssisaac/puremac"
+              rel="noopener noreferrer"
+              target="_blank"
+              >GitHub</a
+            >
+          </nav>
+        </header>
+
+        <main>
+          <section class="hero" aria-labelledby="hero-title">
+            <div class="hero-glow" aria-hidden="true"></div>
+            <div class="hero-grid">
+              <div class="hero-copy">
+                <p class="hero-kicker">
+                  Made for Apple Silicon &amp; Intel Macs
+                </p>
+                <h1 id="hero-title" class="hero-title">
+                  See what is using your Mac storage—then reclaim it with
+                  confidence.
+                </h1>
+                <p class="hero-lead">
+                  PureMac is a native desktop app that maps disk usage, runs a
+                  structured system scan, and surfaces large or cache-heavy
+                  items across your home folder. Review results in a clear
+                  dashboard, drill into categories, and remove only what you
+                  choose—your data stays on your machine.
+                </p>
+                <div class="hero-actions">
+                  <a
+                    id="download-hero"
+                    class="btn-download"
+                    href="https://github.com/gssisaac/puremac/releases"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <svg
+                      class="dl-ico"
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 15V3" />
+                      <path d="M7 10l5 5 5-5" />
+                      <path d="M5 21h14" />
+                    </svg>
+                    <span class="dl-label">Download for macOS</span>
+                  </a>
+                  <a
+                    class="btn-ghost-nav"
+                    href="https://github.com/gssisaac/puremac"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    Source &amp; issues on GitHub
+                  </a>
+                </div>
+                <p class="hero-download-note" id="download-filename-note">
+                  After you run <code class="mono">pnpm tauri:build</code> on
+                  your machine, this page links to your packaged
+                  <code class="mono" id="download-filename-display"
+                    >PureMac.&lt;version&gt;.dmg</code
+                  >
+                  in <code class="mono">website/releases</code> — or open
+                  GitHub Releases if the file is not hosted here yet.
+                </p>
+              </div>
+              <figure class="hero-visual">
+                <img
+                  class="hero-product"
+                  src="../public/puremac.webp"
+                  alt="PureMac app window showing disk usage"
+                  width="960"
+                  height="600"
+                  loading="eager"
+                  decoding="async"
+                />
+              </figure>
+            </div>
+          </section>
+
+          <section
+            class="section intro-video-section"
+            aria-label="Product preview video"
+          >
+            <div class="intro-video-card">
+              <video
+                class="intro-video"
+                src="../public/intro-video.mp4"
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="auto"
+              >
+                Your browser does not support embedded video.
+              </video>
+            </div>
+          </section>
+
+          <section class="section" aria-labelledby="why-title">
+            <h2 id="why-title" class="section-title">Why PureMac exists</h2>
+            <p class="section-lead">
+              macOS makes it surprisingly hard to answer a simple question:
+              <strong>where did my disk go?</strong>
+              Finder and About This Mac hint at totals, but they do not show
+              which caches, downloads, developer folders, or old projects are
+              responsible. PureMac is a focused companion for that job—offline,
+              understandable, and under your control.
+            </p>
+            <div class="feature-grid">
+              <article class="feature-card">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <ellipse cx="12" cy="5" rx="9" ry="3" />
+                    <path d="M3 12c0 1.657 4.03 3 9 3s9-1.343 9-3" />
+                    <path d="M3 5v14c0 1.657 4.03 3 9 3s9-1.343 9-3V5" />
+                  </svg>
+                </div>
+                <h3>Dashboard clarity</h3>
+                <p>
+                  Capacity, used versus free space, and category breakdowns mirror
+                  the in-app dashboard so you always start from the big picture.
+                </p>
+              </article>
+              <article class="feature-card">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                    <path d="M11 8v6" />
+                    <path d="M8 11h6" />
+                  </svg>
+                </div>
+                <h3>Guided system scan</h3>
+                <p>
+                  Launch a scan that walks key locations under your home
+                  directory, then review everything in a sortable results view.
+                </p>
+              </article>
+              <article class="feature-card">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                    <path d="M9 12l2 2 4-4" />
+                  </svg>
+                </div>
+                <h3>Review before you delete</h3>
+                <p>
+                  Inspect paths, sizes, and risk hints. Nothing is removed until
+                  you explicitly confirm—no silent cleaners or cloud uploads.
+                </p>
+              </article>
+              <article class="feature-card">
+                <div class="feature-icon" aria-hidden="true">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect x="3" y="11" width="18" height="10" rx="2" />
+                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                  </svg>
+                </div>
+                <h3>Local &amp; transparent</h3>
+                <p>
+                  Built with Tauri (Rust + web UI) so the app stays fast and easy
+                  to audit. Grant Full Disk Access only if you want the deepest
+                  scan coverage.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section class="split" aria-labelledby="cta-title">
+            <div class="split-row">
+              <div>
+                <h2 id="cta-title" class="section-title" style="margin-bottom: 8px">
+                  Install the latest DMG
+                </h2>
+                <p class="split-copy">
+                  The project is <strong>free forever</strong> and developed in
+                  public on
+                  <a
+                    href="https://github.com/gssisaac/puremac"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    >github.com/gssisaac/puremac</a
+                  >. Download the signed disk image for the current version, or
+                  build from source if you prefer.
+                </p>
+              </div>
+              <a
+                id="download-cta"
+                class="btn-download"
+                href="https://github.com/gssisaac/puremac/releases"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <svg
+                  class="dl-ico"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  aria-hidden="true"
+                >
+                  <path d="M12 15V3" />
+                  <path d="M7 10l5 5 5-5" />
+                  <path d="M5 21h14" />
+                </svg>
+                <span class="dl-label">Download PureMac</span>
+              </a>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <footer class="site-footer">
+        <div class="site-footer-inner">
+          <span>© PureMac contributors — open source on GitHub.</span>
+          <a
+            href="https://github.com/gssisaac/puremac"
+            rel="noopener noreferrer"
+            target="_blank"
+            >github.com/gssisaac/puremac</a
+          >
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        var GH_RELEASES = "https://github.com/gssisaac/puremac/releases";
+        var hero = document.getElementById("download-hero");
+        var cta = document.getElementById("download-cta");
+        var note = document.getElementById("download-filename-note");
+        var nameEl = document.getElementById("download-filename-display");
+        var heroLabel = hero.querySelector(".dl-label");
+        var ctaLabel = cta.querySelector(".dl-label");
+
+        function localUrl(file) {
+          return "releases/" + encodeURIComponent(file);
+        }
+
+        function setGithubFallback() {
+          hero.href = GH_RELEASES;
+          cta.href = GH_RELEASES;
+          hero.target = "_blank";
+          cta.target = "_blank";
+          hero.rel = "noopener noreferrer";
+          cta.rel = "noopener noreferrer";
+        }
+
+        function applyLocal(meta) {
+          var url = localUrl(meta.file);
+          hero.href = url;
+          cta.href = url;
+          hero.removeAttribute("target");
+          cta.removeAttribute("target");
+          hero.removeAttribute("rel");
+          cta.removeAttribute("rel");
+          nameEl.textContent = meta.file;
+          var ver = meta.version ? " " + meta.version : "";
+          heroLabel.textContent = "Download PureMac" + ver + " for macOS";
+          ctaLabel.textContent = "Download PureMac" + ver + " for macOS";
+          note.innerHTML =
+            'Installer: <code class="mono">' +
+            meta.file +
+            '</code> in <code class="mono">website/releases</code> (copied when you run <code class="mono">pnpm tauri:build</code>).';
+        }
+
+        fetch("download.json", { cache: "no-store" })
+          .then(function (r) {
+            return r.ok ? r.json() : null;
+          })
+          .then(function (meta) {
+            if (!meta || !meta.file) {
+              setGithubFallback();
+              return;
+            }
+            return fetch(localUrl(meta.file), { method: "HEAD" })
+              .then(function (headRes) {
+                var allow =
+                  headRes &&
+                  (headRes.ok || headRes.status === 405);
+                if (allow) {
+                  applyLocal(meta);
+                } else {
+                  setGithubFallback();
+                }
+              })
+              .catch(function () {
+                setGithubFallback();
+              });
+          })
+          .catch(function () {
+            setGithubFallback();
+          });
+      })();
+    </script>
+  </body>
+</html>

@@ -8,7 +8,13 @@ type Props = {
 
 export function DiskUsageChart({ disk, summary }: Props) {
   if (!disk) {
-    return <div className="card chart-card">Loading disk…</div>;
+    return (
+      <div className="disk-hero disk-hero-loading">
+        <p className="muted small" style={{ margin: 0 }}>
+          Loading disk…
+        </p>
+      </div>
+    );
   }
 
   const reclaim = summary?.totalBytes ?? 0;
@@ -23,30 +29,31 @@ export function DiskUsageChart({ disk, summary }: Props) {
   const reclaimShow = Math.min(reclaim, Math.max(0, total - used));
 
   return (
-    <div className="card chart-card">
-      <div className="row spread">
-        <div>
-          <h3>Disk overview</h3>
-          <p className="muted small">
-            Used {formatBytes(used)} · Free {formatBytes(freeBytes)}
-            {reclaim > 0 && ` · Last scan: ${formatBytes(reclaimShow)} flagged`}
+    <section className="disk-hero">
+      <div className="disk-hero-glow" aria-hidden />
+      <div className="disk-hero-top">
+        <div className="disk-hero-stats">
+          <h2 className="disk-hero-label">Disk overview</h2>
+          <div className="disk-hero-capacity">
+            <span className="disk-hero-total">
+              {formatBytes(total)}{" "}
+              <span className="disk-hero-total-unit">total</span>
+            </span>
+            <span className="disk-hero-slash">/</span>
+            <span className="disk-hero-used-line">{formatBytes(used)} used</span>
+          </div>
+          <p className="disk-hero-avail">
+            Available space:{" "}
+            <span className="disk-hero-avail-val">{formatBytes(freeBytes)}</span>
           </p>
         </div>
-      </div>
-      <div className="donut-simple row gap spread">
-        <div>
-          <div className="muted tiny">Composition</div>
-          <div className="mono strong">
-            {formatBytes(used)} / {formatBytes(total)}
-          </div>
-        </div>
-        <div className="text-right">
-          <div className="muted tiny">Potentially freeable</div>
-          <div className="mono accent">{formatBytes(reclaimShow)}</div>
+        <div className="disk-hero-freeable">
+          <span className="disk-hero-freeable-label">Potentially freeable</span>
+          <span className="disk-hero-freeable-val">{formatBytes(reclaimShow)}</span>
         </div>
       </div>
-      <div className="disk-bar">
-        <div className="disk-bar-inner">
+      <div className="disk-bar-wrap">
+        <div className="disk-bar-inner disk-bar-inner-hero">
           <div className="bar used" style={{ width: `${usedFrac * 100}%` }} />
           <div
             className="bar reclaim"
@@ -54,18 +61,21 @@ export function DiskUsageChart({ disk, summary }: Props) {
           />
           <div className="bar free" style={{ width: `${availFrac * 100}%` }} />
         </div>
+        <div className="legend legend-hero row gap wrap">
+          <span className="legend-item">
+            <i className="swatch used" /> Used{" "}
+            <span className="legend-size muted">({formatBytes(used)})</span>
+          </span>
+          <span className="legend-item">
+            <i className="swatch reclaim" /> Potentially freeable{" "}
+            <span className="legend-size muted">({formatBytes(reclaimShow)})</span>
+          </span>
+          <span className="legend-item">
+            <i className="swatch free" /> Available{" "}
+            <span className="legend-size muted">({formatBytes(freeBytes)})</span>
+          </span>
+        </div>
       </div>
-      <div className="legend row gap wrap">
-        <span>
-          <i className="swatch used" /> Used
-        </span>
-        <span>
-          <i className="swatch reclaim" /> Potentially freeable
-        </span>
-        <span>
-          <i className="swatch free" /> Available
-        </span>
-      </div>
-    </div>
+    </section>
   );
 }

@@ -18,21 +18,62 @@ import { Switch } from "../ui/switch";
 
 const META: Record<
   Category,
-  { label: string; hint: string; icon: LucideIcon }
+  { label: string; hint: string; icon: LucideIcon; accent: string }
 > = {
-  Dotfiles: { label: "Dotfiles", hint: "Stale app configs", icon: FolderOpen },
-  NodeModules: { label: "node_modules", hint: "Old JS deps", icon: Package },
-  DormantApps: { label: "Dormant apps", hint: "Unused apps", icon: AppWindow },
-  AppSupport: {
-    label: "App support orphans",
-    hint: "Leftover data",
-    icon: LayoutGrid,
+  Dotfiles: {
+    label: "Dotfiles",
+    hint: "Stale app configs & hidden paths",
+    icon: FolderOpen,
+    accent: "cyan",
   },
-  DeveloperTools: { label: "Developer", hint: "Caches & SDKs", icon: Code2 },
-  SystemCache: { label: "System caches", hint: "Safe-ish junk", icon: Database },
-  Browser: { label: "Browser caches", hint: "Rebuild on launch", icon: Globe },
-  Backups: { label: "Backups", hint: "iOS backups", icon: Archive },
-  LargeFiles: { label: "Large files", hint: "Home scan", icon: FileStack },
+  NodeModules: {
+    label: "node_modules",
+    hint: "Old JS ecosystem dependencies",
+    icon: Package,
+    accent: "emerald",
+  },
+  DormantApps: {
+    label: "Dormant Apps",
+    hint: "Unused binary files & binaries",
+    icon: AppWindow,
+    accent: "indigo",
+  },
+  AppSupport: {
+    label: "App Support Orphans",
+    hint: "Leftover fragments & trash data",
+    icon: LayoutGrid,
+    accent: "purple",
+  },
+  DeveloperTools: {
+    label: "Developer",
+    hint: "Build logs, artifacts & SDKs",
+    icon: Code2,
+    accent: "amber",
+  },
+  SystemCache: {
+    label: "System Caches",
+    hint: "Safe-to-flush OS cache bundles",
+    icon: Database,
+    accent: "rose",
+  },
+  Browser: {
+    label: "Browser Caches",
+    hint: "Rebuilds dynamically on launch",
+    icon: Globe,
+    accent: "teal",
+  },
+  Backups: {
+    label: "Backups",
+    hint: "Local iOS & iPad disk mirror logs",
+    icon: Archive,
+    accent: "pink",
+  },
+  LargeFiles: {
+    label: "Large Files",
+    hint: "Notable files in home",
+    icon: FileStack,
+    accent: "orange",
+  },
 };
 
 function bytesForCategory(summary: ScanSummary | null, cat: Category): number | null {
@@ -48,23 +89,21 @@ export function CategoryCard({ cat, summary }: { cat: Category; summary: ScanSum
   const Icon = meta.icon;
 
   return (
-    <Card className="category-card">
-      <div className="row spread">
-        <div className="row gap tight">
-          <span className="cat-lucide-wrap">
-            <Icon size={22} strokeWidth={1.75} className="cat-lucide" />
-          </span>
-          <div>
-            <div className="strong">{meta.label}</div>
-            <div className="muted small">{meta.hint}</div>
-          </div>
+    <Card className="category-card dash-cat-card">
+      <div className="dash-cat-head">
+        <div className={`cat-lucide-wrap dash-cat-icon-wrap dash-cat-icon-${meta.accent}`}>
+          <Icon size={18} strokeWidth={1.75} className="cat-lucide" />
         </div>
         <Switch
           checked={enabled}
           onCheckedChange={(value) => settingsActions.toggleCategory(cat, value)}
         />
       </div>
-      <div className="cat-size mono">{bytes == null ? "—" : formatBytes(bytes)}</div>
+      <div className="dash-cat-body">
+        <h3 className="dash-cat-title">{meta.label}</h3>
+        <p className="dash-cat-hint">{meta.hint}</p>
+        <div className="cat-size dash-cat-size mono">{bytes == null ? "—" : formatBytes(bytes)}</div>
+      </div>
     </Card>
   );
 }

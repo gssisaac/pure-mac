@@ -24,6 +24,10 @@ function PermissionsGate({ children }: { children: ReactNode }) {
   if (fda === false && !dismissed) {
     return (
       <div className="perm-screen">
+        <div
+          className="win-drag-region win-drag-region-perm"
+          data-tauri-drag-region
+        />
         <div className="card perm-card">
           <h1>Full Disk Access</h1>
           <p className="muted">
@@ -64,23 +68,29 @@ export default function App() {
     <PermissionsGate>
       <div className="shell">
         <Sidebar page={page} setPage={setPage} />
-        <div className="main app-scroll">
-          {page === "dashboard" && (
-            <Dashboard
-              goScanner={() => setPage("scanner")}
-              goResults={() => setPage("results")}
-            />
-          )}
-          {page === "scanner" && (
-            <ScannerPage goHome={() => setPage("dashboard")} />
-          )}
-          {page === "results" &&
-            (detailItemId ? (
-              <ResultDetailPage itemId={detailItemId} />
-            ) : (
-              <ResultsPage />
-            ))}
-          {page === "settings" && <SettingsPage />}
+        <div className="main">
+          <div
+            className="win-drag-region win-drag-region-content"
+            data-tauri-drag-region
+          />
+          <div className="main-body app-scroll">
+            {page === "dashboard" && (
+              <Dashboard
+                goScanner={() => setPage("scanner")}
+                goResults={() => setPage("results")}
+              />
+            )}
+            {page === "scanner" && (
+              <ScannerPage goHome={() => setPage("dashboard")} />
+            )}
+            {page === "results" &&
+              (detailItemId ? (
+                <ResultDetailPage itemId={detailItemId} />
+              ) : (
+                <ResultsPage />
+              ))}
+            {page === "settings" && <SettingsPage />}
+          </div>
         </div>
       </div>
     </PermissionsGate>
