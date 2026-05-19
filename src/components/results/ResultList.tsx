@@ -10,7 +10,14 @@ import { formatBytes } from "../../lib/utils";
 import { ResultItem } from "./ResultItem";
 import { scanActions, useScanStore, type ActiveCategory } from "../../store/scanStore";
 import { Input } from "../ui/input";
-import { Select } from "../ui/select";
+import { Label } from "../ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 const ROW_H = 72;
 
@@ -50,10 +57,77 @@ export function CategoryTabs({
   );
 }
 
-type SortKey = "size" | "date" | "name";
+export type RiskFilter = "all" | "recommended" | "other";
+export type ResultSortKey = "size" | "accessed" | "name";
 
-export function ResultList({ items }: { items: ScanItem[] }) {
-  const [sort, setSort] = useState<SortKey>("size");
+export function ResultsFilterSortControls({
+  riskFilter,
+  onRiskFilterChange,
+  sort,
+  onSortChange,
+}: {
+  riskFilter: RiskFilter;
+  onRiskFilterChange: (v: RiskFilter) => void;
+  sort: ResultSortKey;
+  onSortChange: (v: ResultSortKey) => void;
+}) {
+  return (
+    <div className="results-topbar-filters">
+      <div className="result-toolbar-field result-toolbar-field-inline">
+        <Label className="result-toolbar-label" htmlFor="results-risk-filter">
+          Filter
+        </Label>
+        <Select
+          value={riskFilter}
+          onValueChange={(v) => onRiskFilterChange(v as RiskFilter)}
+        >
+          <SelectTrigger id="results-risk-filter" className="result-select-trigger">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All items</SelectItem>
+            <SelectItem value="recommended">Recommended</SelectItem>
+            <SelectItem value="other">Other (safe &amp; caution)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="result-toolbar-field result-toolbar-field-inline">
+        <Label className="result-toolbar-label" htmlFor="results-sort-select">
+          Sort
+        </Label>
+        <Select value={sort} onValueChange={(v) => onSortChange(v as ResultSortKey)}>
+          <SelectTrigger id="results-sort-select" className="result-select-trigger">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="size">Size (largest first)</SelectItem>
+            <SelectItem value="accessed">Last accessed (recent first)</SelectItem>
+            <SelectItem value="name">Name (A–Z)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+}
+
+function compareByAccessedDesc(a: ScanItem, b: ScanItem): number {
+  const av = a.lastAccessed;
+  const bv = b.lastAccessed;
+  if (av == null && bv == null) return 0;
+  if (av == null) return 1;
+  if (bv == null) return -1;
+  return bv - av;
+}
+
+export function ResultList({
+  items,
+  riskFilter,
+  sort,
+}: {
+  items: ScanItem[];
+  riskFilter: RiskFilter;
+  sort: ResultSortKey;
+}) {
   const [q, setQ] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
   const theadRef = useRef<HTMLTableSectionElement>(null);
@@ -72,7 +146,13 @@ export function ResultList({ items }: { items: ScanItem[] }) {
   }, []);
 
   const filtered = useMemo(() => {
-    let arr = items.filter((i) =>
+    let arr = items;
+    if (riskFilter === "recommended") {
+      arr = arr.filter((i) => i.riskLevel === "Recommended");
+    } else if (riskFilter === "other") {
+      arr = arr.filter((i) => i.riskLevel !== "Recommended");
+    }
+    arr = arr.filter((i) =>
       q.trim()
         ? `${i.name} ${i.path} ${i.description}`
             .toLowerCase()
@@ -82,12 +162,10 @@ export function ResultList({ items }: { items: ScanItem[] }) {
     arr = [...arr].sort((a, b) => {
       if (sort === "size") return b.sizeBytes - a.sizeBytes;
       if (sort === "name") return a.name.localeCompare(b.name);
-      const ad = a.lastModified ?? 0;
-      const bd = b.lastModified ?? 0;
-      return ad - bd;
+      return compareByAccessedDesc(a, b);
     });
     return arr;
-  }, [items, q, sort]);
+  }, [items, q, sort, riskFilter]);
 
   useLayoutEffect(() => {
     const th = theadRef.current;
@@ -97,7 +175,7 @@ export function ResultList({ items }: { items: ScanItem[] }) {
     const ro = new ResizeObserver(measure);
     ro.observe(th);
     return () => ro.disconnect();
-  }, [filtered.length, q, sort]);
+  }, [filtered.length, q, sort, riskFilter]);
 
   const onScroll = useCallback(() => {
     const el = scrollRef.current;
@@ -125,15 +203,6 @@ export function ResultList({ items }: { items: ScanItem[] }) {
           value={q}
           onChange={(e) => setQ(e.target.value)}
         />
-        <Select
-          className="select"
-          value={sort}
-          onChange={(e) => setSort(e.target.value as SortKey)}
-        >
-          <option value="size">Size (desc)</option>
-          <option value="date">Date (oldest first)</option>
-          <option value="name">Name</option>
-        </Select>
       </div>
       <div
         className="virtual-scroll app-scroll"

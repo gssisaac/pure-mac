@@ -10,7 +10,13 @@ import { useEffect, useState } from "react";
 import { Card } from "../components/ui/card";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
-import { Select } from "../components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
 import { Button } from "../components/ui/button";
 import { Switch } from "../components/ui/switch";
 
@@ -115,17 +121,20 @@ export function SettingsPage() {
 
         <Card>
           <h3>Delete behavior</h3>
-          <Label>Default delete mode</Label>
+          <Label htmlFor="settings-default-delete-mode">Default delete mode</Label>
           <Select
             value={s.defaultDeleteMode}
-            onChange={(e) =>
-              settingsActions.setDefaultDeleteMode(
-                e.target.value as "trash" | "permanent",
-              )
+            onValueChange={(v) =>
+              settingsActions.setDefaultDeleteMode(v as "trash" | "permanent")
             }
           >
-            <option value="trash">Move to Trash</option>
-            <option value="permanent">Delete Permanently</option>
+            <SelectTrigger id="settings-default-delete-mode">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="trash">Move to Trash</SelectItem>
+              <SelectItem value="permanent">Delete Permanently</SelectItem>
+            </SelectContent>
           </Select>
           <label className="row spread ui-list-row">
             <span>Dry-run mode</span>

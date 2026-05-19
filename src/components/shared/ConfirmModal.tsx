@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import type { DeleteMode } from "../../store/settingsStore";
 import type { DeleteConfirmRow } from "../../lib/types";
 import { formatBytes } from "../../lib/utils";
@@ -6,13 +7,19 @@ import { RiskBadge } from "./RiskBadge";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Select } from "../ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   rows: DeleteConfirmRow[];
-  onConfirm: (mode: DeleteMode) => void;
+  onConfirm: (mode: DeleteMode) => void | Promise<void>;
   defaultMode: DeleteMode;
 };
 
@@ -25,11 +32,13 @@ export function ConfirmModal({
 }: Props) {
   const [mode, setMode] = useState<DeleteMode>(defaultMode);
   const [typed, setTyped] = useState("");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     if (open) {
       setMode(defaultMode);
       setTyped("");
+      setBusy(false);
     }
   }, [open, defaultMode]);
 
@@ -40,8 +49,28 @@ export function ConfirmModal({
   const rest = rows.length - preview.length;
   const permanentOk = typed === "DELETE";
 
+  const runConfirm = async () => {
+    if (busy) return;
+    if (mode === "permanent" && !permanentOk) return;
+    setBusy(true);
+    try {
+      await Promise.resolve(onConfirm(mode));
+      onClose();
+    } catch {
+      /* keep dialog open; deletion hook may surface errors elsewhere */
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
-    <div className="modal-backdrop" role="presentation" onClick={onClose}>
+    <div
+      className="modal-backdrop"
+      role="presentation"
+      onClick={() => {
+        if (!busy) onClose();
+      }}
+    >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <h2>Confirm deletion</h2>
         <p className="muted small">
@@ -63,10 +92,19 @@ export function ConfirmModal({
         {rest > 0 && <p className="muted small">+ {rest} more</p>}
 
         <div className="field">
-          <Label>Mode</Label>
-          <Select value={mode} onChange={(e) => setMode(e.target.value as DeleteMode)}>
-            <option value="trash">Move to Trash (recommended)</option>
-            <option value="permanent">Delete permanently</option>
+          <Label htmlFor="delete-mode-select">Mode</Label>
+          <Select
+            value={mode}
+            onValueChange={(v) => setMode(v as DeleteMode)}
+            disabled={busy}
+          >
+            <SelectTrigger id="delete-mode-select">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="trash">Move to Trash (recommended)</SelectItem>
+              <SelectItem value="permanent">Delete permanently</SelectItem>
+            </SelectContent>
           </Select>
         </div>
 
@@ -80,21 +118,31 @@ export function ConfirmModal({
               onChange={(e) => setTyped(e.target.value)}
               placeholder="DELETE"
               autoComplete="off"
+              disabled={busy}
             />
           </div>
         )}
 
         <div className="row end gap">
-          <Button type="button" variant="ghost" onClick={onClose}>
+          <Button type="button" variant="ghost" onClick={onClose} disabled={busy}>
             Cancel
           </Button>
           <Button
             type="button"
             variant={mode === "permanent" ? "destructive" : "default"}
-            disabled={mode === "permanent" && !permanentOk}
-            onClick={() => onConfirm(mode)}
+            disabled={(mode === "permanent" && !permanentOk) || busy}
+            onClick={() => void runConfirm()}
           >
-            {mode === "trash" ? "Move to Trash" : "Delete permanently"}
+            {busy ? (
+              <>
+                <Loader2 className="spinner-icon" size={16} />
+                Deleting…
+              </>
+            ) : mode === "trash" ? (
+              "Move to Trash"
+            ) : (
+              "Delete permanently"
+            )}
           </Button>
         </div>
       </div>

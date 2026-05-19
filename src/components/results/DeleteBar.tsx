@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { formatBytes } from "../../lib/utils";
 import { scanActions, useScanStore } from "../../store/scanStore";
@@ -59,7 +60,6 @@ export function DeleteBar() {
   if (count === 0) return null;
 
   const run = async (mode: DeleteMode) => {
-    setConfirmOpen(false);
     const pathSet = new Set<string>();
     for (const it of selected) pathSet.add(it.path);
     for (const row of subfolderRows) pathSet.add(row.key);
@@ -81,8 +81,19 @@ export function DeleteBar() {
           </span>
           {dryRun && <span className="pill warn">DRY RUN</span>}
         </div>
-        <div className="row gap">
-          <Button type="button" variant="ghost" onClick={() => scanActions.clearSelection()}>
+        <div className="row gap tight">
+          {pending && (
+            <span className="row gap tight delete-bar-progress muted small">
+              <Loader2 className="spinner-icon" size={18} aria-hidden />
+              <span>Deleting…</span>
+            </span>
+          )}
+          <Button
+            type="button"
+            variant="ghost"
+            disabled={pending}
+            onClick={() => scanActions.clearSelection()}
+          >
             Deselect all
           </Button>
           <Button type="button" disabled={pending} onClick={() => setConfirmOpen(true)}>
@@ -95,7 +106,7 @@ export function DeleteBar() {
         onClose={() => setConfirmOpen(false)}
         rows={confirmRows}
         defaultMode={defaultMode}
-        onConfirm={(mode) => void run(mode)}
+        onConfirm={(mode) => run(mode)}
       />
     </>
   );
